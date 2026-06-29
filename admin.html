@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Portal | John Dewey H.S. School</title>
+  <meta name="description" content="Staff portal for John Dewey H.S. School administrators.">
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
+  <link rel="apple-touch-icon" href="./favicon-180.png">
+  <link rel="canonical" href="https://johndewey.edu.np/admin.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Newsreader:ital,wght@0,400;0,500;1,400&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style_v2.css">
+</head>
+
+<body>
+  <div class="preloader" id="preloader">
+    <img src="logo-white.png" alt="John Dewey H.S. School" class="preloader-logo-img">
+    <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
+  </div>
+  <div class="scroll-progress" id="scrollProgress"></div>
+  <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode"></button>
+
+  <div class="top-bar">
+    <div class="container">
+      <div class="top-bar-left">
+        <a href="tel:+97715911792">01-5911792 / 93 / 94</a>
+        <a href="mailto:info@johndewey.edu.np">info@johndewey.edu.np</a>
+      </div>
+      <div class="top-bar-right">
+        <a href="contact.html">Contact</a>
+        <a href="calendar.html">Calendar</a>
+        <a href="scrapbook.html">Scrapbook</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="header" id="header">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <img src="logo.png" alt="John Dewey H.S. School" class="logo-full-img">
+      </a>
+      <nav class="nav-menu" id="navMenu">
+        <div class="nav-dropdown">
+          <a href="about.html" class="nav-link">About</a>
+          <div class="nav-dropdown-menu">
+            <a href="about.html">About Us</a>
+            <a href="teams.html">Team Members</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="school.html" class="nav-link">Academics</a>
+          <div class="nav-dropdown-menu">
+            <a href="kindergarten.html">Kindergarten</a>
+            <a href="school.html">School (1-10)</a>
+            <a href="plus2.html">Plus 2</a>
+          </div>
+        </div>
+        <a href="facilities.html" class="nav-link">Facilities</a>
+        <a href="cocurricular.html" class="nav-link">Co-curricular</a>
+        <a href="events.html" class="nav-link">Events</a>
+        <a href="gallery.html" class="nav-link">Gallery</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+        <div class="nav-cta"><a href="apply.html" class="btn btn-primary btn-sm">Apply Online</a></div>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <div class="nav-overlay" id="navOverlay"></div>
+
+  <section class="page-banner">
+    <div class="container">
+      <h1>Staff Portal</h1>
+      <div class="breadcrumb"><a href="index.html">Home</a> <span>/</span> <span>Staff Portal</span></div>
+    </div>
+  </section>
+
+  <section class="admin-shell">
+    <div class="container">
+      <div class="admin-login" id="adminLogin">
+        <span class="badge">Administrator</span>
+        <h2>Staff sign in</h2>
+        <p style="margin-bottom:1.5rem;">Enter your credentials to manage site content.</p>
+        <form id="adminLoginForm" novalidate>
+          <div class="form-group"><label for="adminUser">Email</label><input class="form-control" type="text" id="adminUser" autocomplete="username" required></div>
+          <div class="form-group"><label for="adminPass">Password</label><input class="form-control" type="password" id="adminPass" autocomplete="current-password" required></div>
+          <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+          <p class="admin-error" id="adminLoginError">Incorrect username or password.</p>
+        </form>
+      </div>
+
+      <div id="adminDash" style="display:none;">
+        <div class="admin-bar">
+          <h2>Content Management</h2>
+          <div style="display:flex;align-items:center;gap:1rem;">
+            <span class="admin-user">Signed in as Admin</span>
+            <button class="admin-icon-btn" id="adminExport">Export</button>
+            <label class="admin-icon-btn" for="adminImportFile" style="cursor:pointer;">Import</label>
+            <input type="file" id="adminImportFile" accept=".json,application/json" style="display:none;">
+            <button class="admin-icon-btn" id="adminReset">Reset All</button>
+            <button class="admin-icon-btn danger" id="adminLogout">Log Out</button>
+          </div>
+        </div>
+        <div class="admin-note">Changes are saved in this browser and update the public pages on this device. To publish for all visitors, export the values and commit them to the site source.</div>
+        <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="applications">Applications</button>
+        <button class="admin-tab" data-tab="events">Events</button>
+        <button class="admin-tab" data-tab="notices">Notices</button>
+        <button class="admin-tab" data-tab="scrapbook">Scrapbook</button>
+        <button class="admin-tab" data-tab="gallery">Gallery</button>
+        <button class="admin-tab" data-tab="testimonials">Parents Voice</button>
+        </div>
+        <div class="admin-panel active" id="panel-applications"><h4 style="margin-bottom:1.25rem;">Admission Applications</h4><div class="admin-list" id="list-applications"></div></div>
+      <div class="admin-panel" id="panel-events"><div class="admin-list" id="list-events"></div><form class="admin-form" data-form="events" id="form-events"><h4>Manage Events</h4><div class="form-group"><label for="ev-day">Day</label><input class="form-control" type="text" id="ev-day" placeholder="12"></div>
+            <div class="form-group"><label for="ev-month">Month</label><input class="form-control" type="text" id="ev-month" placeholder="Jun"></div>
+            <div class="form-group"><label for="ev-title">Title</label><input class="form-control" type="text" id="ev-title" placeholder="Event title"></div>
+            <div class="form-group"><label for="ev-date">Full Date</label><input class="form-control" type="text" id="ev-date" placeholder="June 12, 2026"></div>
+            <div class="form-group admin-fullwidth"><label for="ev-text">Description</label><textarea class="form-control" id="ev-text" placeholder="Short description"></textarea></div><button type="submit" class="btn btn-primary admin-form-submit">Add Entry</button></form></div>
+      <div class="admin-panel" id="panel-notices"><div class="admin-list" id="list-notices"></div><form class="admin-form" data-form="notices" id="form-notices"><h4>Manage Notices</h4><div class="form-group"><label for="no-date">Date</label><input class="form-control" type="text" id="no-date" placeholder="June 4, 2026"></div>
+            <div class="form-group admin-fullwidth"><label for="no-text">Notice</label><textarea class="form-control" id="no-text" placeholder="Notice text"></textarea></div><button type="submit" class="btn btn-primary admin-form-submit">Add Entry</button></form></div>
+      <div class="admin-panel" id="panel-scrapbook"><div class="admin-list" id="list-scrapbook"></div><form class="admin-form" data-form="scrapbook" id="form-scrapbook"><h4>Manage Student Work</h4><div class="form-group admin-fullwidth"><label for="sc-cat">Category</label><select class="form-control" id="sc-cat"><option value="webpages">Student Webpage</option><option value="field-visits">Field Visit</option><option value="pbl">Project Based Lab</option></select></div><div class="form-group"><label for="sc-title">Title</label><input class="form-control" type="text" id="sc-title" placeholder="Project title"></div><div class="form-group"><label for="sc-by">By</label><input class="form-control" type="text" id="sc-by" placeholder="Grade IX, Computer Project"></div><div class="form-group"><label for="sc-date">Date</label><input class="form-control" type="text" id="sc-date" placeholder="Jun 2026"></div><div class="form-group" data-scrapcat="field-visits"><label for="sc-place">Place Visited</label><input class="form-control" type="text" id="sc-place" placeholder="Dashinkali Temple"></div><div class="form-group" data-scrapcat="pbl"><label for="sc-subject">Subject Area</label><input class="form-control" type="text" id="sc-subject" placeholder="Science, Robotics"></div><div class="form-group admin-fullwidth"><label for="sc-desc">Description</label><textarea class="form-control" id="sc-desc" placeholder="Short description"></textarea></div><div class="form-group admin-fullwidth"><label for="sc-img">Cover Image</label><input class="form-control" type="file" id="sc-img" accept="image/*"><p id="sc-img-status" class="admin-file-status"></p></div><div class="form-group admin-fullwidth" data-scrapcat="webpages"><label for="sc-html">Upload Webpage File (.html)</label><input class="form-control" type="file" id="sc-html" accept=".html,.htm,text/html"><p id="sc-html-status" class="admin-file-status"></p><p class="admin-hint">The student's HTML page is hosted on the site and opens inside John Dewey with the header and footer.</p></div><button type="submit" class="btn btn-primary admin-form-submit">Add Entry</button></form></div>
+      <div class="admin-panel" id="panel-gallery"><div class="admin-list" id="list-gallery"></div><form class="admin-form" data-form="gallery" id="form-gallery"><h4>Manage Gallery</h4><div class="form-group admin-fullwidth"><label for="ga-cat">Category</label><select class="form-control" id="ga-cat"><option value="academics">Academics</option><option value="sports">Sports</option><option value="arts">Arts</option><option value="events">Events</option></select></div><div class="form-group"><label for="ga-cap">Caption</label><input class="form-control" type="text" id="ga-cap" placeholder="Classroom learning"></div><div class="form-group admin-fullwidth"><label for="ga-img">Upload Image</label><input class="form-control" type="file" id="ga-img" accept="image/*"><p id="ga-img-status" class="admin-file-status"></p></div><button type="submit" class="btn btn-primary admin-form-submit">Add Entry</button></form></div>
+      <div class="admin-panel" id="panel-testimonials"><div class="admin-list" id="list-testimonials"></div><form class="admin-form" data-form="testimonials" id="form-testimonials"><h4>Manage Testimonials</h4><div class="form-group admin-fullwidth"><label for="te-quote">Quote</label><textarea class="form-control" id="te-quote" placeholder="What the parent said"></textarea></div>
+            <div class="form-group"><label for="te-name">Name</label><input class="form-control" type="text" id="te-name" placeholder="Parent name"></div>
+            <div class="form-group"><label for="te-role">Role</label><input class="form-control" type="text" id="te-role" placeholder="Parent, Grade V"></div>
+            <div class="form-group"><label for="te-initials">Initials</label><input class="form-control" type="text" id="te-initials" placeholder="SP"></div><button type="submit" class="btn btn-primary admin-form-submit">Add Entry</button></form></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="admin-toast" id="adminToast"></div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="logo-white.png" alt="John Dewey H.S. School" class="footer-logo-img">
+          <p><a href="https://www.google.com/maps/place/John+Dewey+School/@27.7411971,85.3438504,17z/data=!3m1!4b1!4m6!3m5!1s0x39eb193e666c4447:0x204cfa9e4348049a!8m2!3d27.7411971!4d85.3438504" target="_blank" rel="noopener" class="footer-address-link">Kapan Marg, Peepalbot, Maharajgunj, Kathmandu, Nepal</a></p>
+          <div class="footer-contact">
+            <a href="tel:+97715911792">01-5911792, 5911793, 5911794</a>
+            <a href="mailto:info@johndewey.edu.np">info@johndewey.edu.np</a>
+          </div>
+          <div class="footer-social">
+            <a href="https://www.facebook.com/johndeweyKathmandu/" target="_blank" rel="noopener">Facebook</a>
+            <a href="https://www.instagram.com/johndewey_23/" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://www.youtube.com/@johndeweykathmandu7258" target="_blank" rel="noopener">YouTube</a>
+          </div>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <div class="footer-links">
+            <a href="about.html">About Us</a>
+            <a href="teams.html">Our Team</a>
+            <a href="kindergarten.html">Kindergarten</a>
+            <a href="school.html">Class 1-10</a>
+            <a href="plus2.html">Plus 2</a>
+            <a href="facilities.html">Facilities</a>
+          </div>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <div class="footer-links">
+            <a href="cocurricular.html">Co-curricular</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="events.html">Events</a>
+            <a href="calendar.html">Calendar</a>
+            <a href="parents-voice.html">Parents Voice</a>
+          </div>
+        </div>
+        <div>
+          <h4>Get In Touch</h4>
+          <div class="footer-links">
+            <a href="contact.html">Contact Us</a>
+            <a href="apply.html">Apply Online</a>
+            <a href="tel:+9779801986040">9801986040</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>Copyright 2026 John Dewey H.S. School. All rights reserved.</span>
+        <span>Quality Education in Kathmandu &middot; <a href="admin.html" class="footer-staff-link">Staff Portal</a></span>
+      </div>
+    </div>
+  </footer>
+  <button class="back-to-top" id="backToTop" aria-label="Back to top"></button>
+  <script>
+(function(){
+  function start(){
+  var CREDS = { username: 'johndewey06@gmail.com', password: 'johndewey2026@' };
+  var SESSION = 'jd-admin-session';
+  var KEYS = {
+    events: 'jd-content-events',
+    notices: 'jd-content-notices',
+    scrapbook: 'jd-content-scrapbook',
+    gallery: 'jd-content-gallery',
+    testimonials: 'jd-content-testimonials',
+    applications: 'jd-content-applications'
+  };
+
+  function read(k){ try { return JSON.parse(localStorage.getItem(k)) || []; } catch(e){ return []; } }
+  function write(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+  var uploadedData = {};
+  var uploadedName = {};
+
+  var login = document.getElementById('adminLogin');
+  var dash = document.getElementById('adminDash');
+  var loginForm = document.getElementById('adminLoginForm');
+  var loginError = document.getElementById('adminLoginError');
+  if (!login || !dash || !loginForm) return;
+
+  function isAuthed(){ return sessionStorage.getItem(SESSION) === 'true'; }
+  function showDash(){ login.style.display='none'; dash.style.display='block'; renderAll(); }
+  function showLogin(){ login.style.display='block'; dash.style.display='none'; }
+
+  if (isAuthed()) showDash(); else showLogin();
+
+  loginForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var u = document.getElementById('adminUser').value.trim();
+    var p = document.getElementById('adminPass').value;
+    if (u === CREDS.username && p === CREDS.password){
+      sessionStorage.setItem(SESSION,'true');
+      loginError.style.display='none';
+      loginForm.reset();
+      showDash();
+    } else {
+      loginError.style.display='block';
+    }
+  });
+
+  document.getElementById('adminLogout').addEventListener('click', function(){
+    sessionStorage.removeItem(SESSION);
+    showLogin();
+  });
+
+  var tabs = document.querySelectorAll('.admin-tab');
+  var panels = document.querySelectorAll('.admin-panel');
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      tabs.forEach(function(t){ t.classList.remove('active'); });
+      panels.forEach(function(p){ p.classList.remove('active'); });
+      tab.classList.add('active');
+      document.getElementById('panel-' + tab.getAttribute('data-tab')).classList.add('active');
+    });
+  });
+
+  var toast = document.getElementById('adminToast');
+  var toastTimer;
+  function notify(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+  }
+
+  function val(id){ return document.getElementById(id).value.trim(); }
+  function setVal(id,v){ document.getElementById(id).value = v == null ? '' : v; }
+
+  var SCHEMAS = {
+    events: {
+      key: KEYS.events,
+      fields: [
+        {id:'ev-day', label:'Day', ph:'12'},
+        {id:'ev-month', label:'Month', ph:'Jun'},
+        {id:'ev-title', label:'Title', ph:'Event title'},
+        {id:'ev-date', label:'Full Date', ph:'June 12, 2026'},
+        {id:'ev-text', label:'Description', ph:'Short description', area:true}
+      ],
+      toItem: function(){ return { id:uid(), day:val('ev-day'), month:val('ev-month'), title:val('ev-title'), date:val('ev-date'), text:val('ev-text') }; },
+      fill: function(it){ setVal('ev-day',it.day); setVal('ev-month',it.month); setVal('ev-title',it.title); setVal('ev-date',it.date); setVal('ev-text',it.text); },
+      row: function(it){ return '<strong>'+esc(it.title)+'</strong><span>'+esc(it.month)+' '+esc(it.day)+' &middot; '+esc(it.date)+'</span><p>'+esc(it.text)+'</p>'; }
+    },
+    notices: {
+      key: KEYS.notices,
+      fields: [
+        {id:'no-date', label:'Date', ph:'June 4, 2026'},
+        {id:'no-text', label:'Notice', ph:'Notice text', area:true}
+      ],
+      toItem: function(){ return { id:uid(), date:val('no-date'), text:val('no-text') }; },
+      fill: function(it){ setVal('no-date',it.date); setVal('no-text',it.text); },
+      row: function(it){ return '<strong>'+esc(it.text)+'</strong><span>'+esc(it.date)+'</span>'; }
+    },
+    scrapbook: {
+      key: KEYS.scrapbook,
+      toItem: function(){
+        var cat = val('sc-cat');
+        var base = { id:uid(), cat:cat, title:val('sc-title'), by:val('sc-by'), date:val('sc-date'), img: uploadedData['sc-img'] || '', desc:val('sc-desc') };
+        if (cat === 'webpages'){ base.label='Student Webpage'; base.html = uploadedData['sc-html'] || ''; base.file = uploadedName['sc-html'] || ''; }
+        else if (cat === 'field-visits'){ base.label='Field Visit'; base.place = val('sc-place'); }
+        else if (cat === 'pbl'){ base.label='Project Based Lab'; base.subject = val('sc-subject'); }
+        return base;
+      },
+      fill: function(it){
+        setVal('sc-cat', it.cat); applyScrapCat(it.cat);
+        setVal('sc-title',it.title); setVal('sc-by',it.by); setVal('sc-date',it.date); setVal('sc-desc',it.desc);
+        setVal('sc-place', it.place); setVal('sc-subject', it.subject);
+        uploadedData['sc-img']=it.img||''; uploadedData['sc-html']=it.html||''; uploadedName['sc-html']=it.file||'';
+        var si=document.getElementById('sc-img-status'); if(si) si.textContent = it.img ? 'Current image kept' : '';
+        var sh=document.getElementById('sc-html-status'); if(sh) sh.textContent = it.file ? ('Current file: '+it.file) : '';
+      },
+      row: function(it){ var tag = it.html ? ' &middot; HTML' : (it.place ? ' &middot; '+esc(it.place) : (it.subject ? ' &middot; '+esc(it.subject) : '')); return '<strong>'+esc(it.title)+'</strong><span>'+esc(it.label)+' &middot; '+esc(it.by)+tag+'</span><p>'+esc(it.desc)+'</p>'; }
+    },
+    gallery: {
+      key: KEYS.gallery,
+      toItem: function(){ return { id:uid(), cat:val('ga-cat'), img: uploadedData['ga-img'] || '', cap:val('ga-cap') }; },
+      fill: function(it){ setVal('ga-cat',it.cat); setVal('ga-cap',it.cap); uploadedData['ga-img']=it.img||''; var st=document.getElementById('ga-img-status'); if(st) st.textContent = it.img ? 'Current image kept' : ''; },
+      row: function(it){ return '<strong>'+esc(it.cap)+'</strong><span>'+esc(it.cat)+'</span>'; }
+    },
+    testimonials: {
+      key: KEYS.testimonials,
+      fields: [
+        {id:'te-quote', label:'Quote', ph:'What the parent said', area:true},
+        {id:'te-name', label:'Name', ph:'Parent name'},
+        {id:'te-role', label:'Role', ph:'Parent, Grade V'},
+        {id:'te-initials', label:'Initials', ph:'SP'}
+      ],
+      toItem: function(){ return { id:uid(), quote:val('te-quote'), name:val('te-name'), role:val('te-role'), initials:val('te-initials') }; },
+      fill: function(it){ setVal('te-quote',it.quote); setVal('te-name',it.name); setVal('te-role',it.role); setVal('te-initials',it.initials); },
+      row: function(it){ return '<strong>'+esc(it.name)+'</strong><span>'+esc(it.role)+'</span><p>'+esc(it.quote)+'</p>'; }
+    },
+    applications: {
+      key: KEYS.applications,
+      readonly: true,
+      row: function(it){
+        var lines = [];
+        if (it.program) lines.push('Program: ' + esc(it.program) + (it.grade ? ' (' + esc(it.grade) + ')' : ''));
+        if (it.parent) lines.push('Parent: ' + esc(it.parent));
+        if (it.phone) lines.push('Phone: ' + esc(it.phone));
+        if (it.email) lines.push('Email: ' + esc(it.email));
+        if (it.dob) lines.push('DOB: ' + esc(it.dob));
+        if (it.address) lines.push('Address: ' + esc(it.address));
+        if (it.message) lines.push('Note: ' + esc(it.message));
+        return '<strong>'+esc(it.student || 'Applicant')+'</strong><span>'+esc(it.submitted||'')+'</span><p>'+lines.join('<br>')+'</p>';
+      }
+    }
+  };
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  var editing = {};
+
+  function renderList(name){
+    var sc = SCHEMAS[name];
+    var host = document.getElementById('list-' + name);
+    if (!host) return;
+    var data = read(sc.key);
+    if (!data.length){ host.innerHTML = '<div class="admin-note">' + (sc.readonly ? 'No applications received yet.' : 'No entries yet. Add one below.') + '</div>'; return; }
+    host.innerHTML = data.map(function(it){
+      var editBtn = sc.readonly ? '' : '<button class="admin-icon-btn" data-edit="'+name+'" data-id="'+it.id+'">Edit</button>';
+      return '<div class="admin-row"><div class="admin-row-main">'+sc.row(it)+'</div>'+
+        '<div class="admin-row-actions">'+
+        editBtn +
+        '<button class="admin-icon-btn danger" data-del="'+name+'" data-id="'+it.id+'">Delete</button>'+
+        '</div></div>';
+    }).join('');
+  }
+
+  function renderAll(){ Object.keys(SCHEMAS).forEach(renderList); }
+
+  function bindUpload(inputId, kind){
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    var status = document.getElementById(inputId + '-status');
+    input.addEventListener('change', function(){
+      var f = input.files && input.files[0];
+      if (!f){ return; }
+      var max = kind === 'image' ? 1500000 : 2000000;
+      if (f.size > max){ if(status) status.textContent = 'File too large (max ' + (max/1000000) + 'MB).'; input.value=''; return; }
+      var reader = new FileReader();
+      reader.onload = function(){
+        uploadedData[inputId] = String(reader.result || '');
+        uploadedName[inputId] = f.name;
+        if (status) status.textContent = 'Loaded: ' + f.name;
+      };
+      if (kind === 'image') reader.readAsDataURL(f); else reader.readAsText(f);
+    });
+  }
+
+  bindUpload('sc-img', 'image');
+  bindUpload('sc-html', 'html');
+  bindUpload('ga-img', 'image');
+
+  function applyScrapCat(cat){
+    document.querySelectorAll('[data-scrapcat]').forEach(function(el){
+      var cats = el.getAttribute('data-scrapcat').split(' ');
+      el.style.display = cats.indexOf(cat) >= 0 ? '' : 'none';
+    });
+  }
+  var scCat = document.getElementById('sc-cat');
+  if (scCat){ scCat.addEventListener('change', function(){ applyScrapCat(scCat.value); }); applyScrapCat(scCat.value); }
+
+  document.querySelectorAll('.admin-form').forEach(function(form){
+    var name = form.getAttribute('data-form');
+    var sc = SCHEMAS[name];
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var item = sc.toItem();
+      if (!item.title && !item.text && !item.cap && !item.quote){ notify('Please fill in the entry'); return; }
+      var data = read(sc.key);
+      if (editing[name]){
+        item.id = editing[name];
+        data = data.map(function(x){ return x.id === editing[name] ? item : x; });
+        editing[name] = null;
+        form.querySelector('.admin-form-submit').textContent = 'Add Entry';
+        notify('Entry updated');
+      } else {
+        data.unshift(item);
+        notify('Entry added');
+      }
+      try {
+        write(sc.key, data);
+      } catch(err){
+        notify('Storage full. The uploaded file may be too large.');
+        return;
+      }
+      form.reset();
+      if (name === 'scrapbook'){ uploadedData['sc-img']=''; uploadedData['sc-html']=''; uploadedName['sc-html']=''; var s1=document.getElementById('sc-img-status'); if(s1) s1.textContent=''; var s2=document.getElementById('sc-html-status'); if(s2) s2.textContent=''; if(scCat) applyScrapCat(scCat.value); }
+      if (name === 'gallery'){ uploadedData['ga-img']=''; var s3=document.getElementById('ga-img-status'); if(s3) s3.textContent=''; }
+      renderList(name);
+    });
+  });
+
+  document.getElementById('adminDash').addEventListener('click', function(e){
+    var ed = e.target.getAttribute('data-edit');
+    var dl = e.target.getAttribute('data-del');
+    if (ed){
+      var sc = SCHEMAS[ed];
+      var id = e.target.getAttribute('data-id');
+      var it = read(sc.key).filter(function(x){ return x.id===id; })[0];
+      if (it){ sc.fill(it); editing[ed]=id; document.querySelector('[data-form="'+ed+'"] .admin-form-submit').textContent='Save Changes'; document.getElementById('form-'+ed).scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+    if (dl){
+      var s2 = SCHEMAS[dl];
+      var id2 = e.target.getAttribute('data-id');
+      if (confirm('Delete this entry?')){
+        write(s2.key, read(s2.key).filter(function(x){ return x.id!==id2; }));
+        renderList(dl);
+        notify('Entry deleted');
+      }
+    }
+  });
+
+  document.getElementById('adminReset').addEventListener('click', function(){
+    if (confirm('Clear ALL content overrides and revert the site to its default content?')){
+      Object.keys(KEYS).forEach(function(k){ localStorage.removeItem(KEYS[k]); });
+      renderAll();
+      notify('All content reset to defaults');
+    }
+  });
+
+  var exportBtn = document.getElementById('adminExport');
+  if (exportBtn){
+    exportBtn.addEventListener('click', function(){
+      var bundle = {};
+      Object.keys(KEYS).forEach(function(k){ bundle[k] = read(KEYS[k]); });
+      var blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'johndewey-content.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      notify('Content exported');
+    });
+  }
+
+  var importFile = document.getElementById('adminImportFile');
+  if (importFile){
+    importFile.addEventListener('change', function(){
+      var f = importFile.files && importFile.files[0];
+      if (!f) return;
+      var reader = new FileReader();
+      reader.onload = function(){
+        try {
+          var bundle = JSON.parse(String(reader.result || '{}'));
+          var applied = 0;
+          Object.keys(KEYS).forEach(function(k){
+            if (Array.isArray(bundle[k])){ write(KEYS[k], bundle[k]); applied++; }
+          });
+          renderAll();
+          notify(applied ? 'Content imported' : 'No matching content in file');
+        } catch(e){
+          notify('Could not read that file');
+        }
+        importFile.value = '';
+      };
+      reader.readAsText(f);
+    });
+  }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+})();
+</script>
+  <script src="./app.js"></script>
+</body>
+
+</html>
