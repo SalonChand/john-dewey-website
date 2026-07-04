@@ -2359,3 +2359,46 @@ select.form-control {
   transition: color var(--transition-fast);
 }
 .footer-address-link:hover { color: var(--rule); }
+
+.project-files {
+  margin-top: var(--space-xl);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+}
+.project-files h4 {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-bottom: var(--space-md);
+}
+.project-file-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-sm);
+}
+.project-file {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+  overflow-wrap: anywhere;
+}
+.project-file span {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rule);
+  flex-shrink: 0;
+}
+.project-file:hover { border-color: var(--rule); background: var(--bg-alt); }

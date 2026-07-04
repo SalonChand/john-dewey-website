@@ -121,7 +121,7 @@
             <div class="form-group admin-fullwidth"><label for="ev-text">Description</label><textarea class="form-control" id="ev-text" placeholder="Short description"></textarea></div><button type="submit" class="btn btn-primary admin-form-submit">Add Entry</button></form></div>
       <div class="admin-panel" id="panel-notices"><div class="admin-list" id="list-notices"></div><form class="admin-form" data-form="notices" id="form-notices"><h4>Manage Notices</h4><div class="form-group"><label for="no-date">Date</label><input class="form-control" type="text" id="no-date" placeholder="June 4, 2026"></div>
             <div class="form-group admin-fullwidth"><label for="no-text">Notice</label><textarea class="form-control" id="no-text" placeholder="Notice text"></textarea></div><button type="submit" class="btn btn-primary admin-form-submit">Add Entry</button></form></div>
-      <div class="admin-panel" id="panel-scrapbook"><div class="admin-list" id="list-scrapbook"></div><form class="admin-form" data-form="scrapbook" id="form-scrapbook"><h4>Manage Student Work</h4><div class="form-group admin-fullwidth"><label for="sc-cat">Category</label><select class="form-control" id="sc-cat"><option value="webpages">Student Webpage</option><option value="field-visits">Field Visit</option><option value="pbl">Project Based Lab</option></select></div><div class="form-group"><label for="sc-title">Title</label><input class="form-control" type="text" id="sc-title" placeholder="Project title"></div><div class="form-group"><label for="sc-by">By</label><input class="form-control" type="text" id="sc-by" placeholder="Grade IX, Computer Project"></div><div class="form-group"><label for="sc-date">Date</label><input class="form-control" type="text" id="sc-date" placeholder="Jun 2026"></div><div class="form-group" data-scrapcat="field-visits"><label for="sc-place">Place Visited</label><input class="form-control" type="text" id="sc-place" placeholder="Dashinkali Temple"></div><div class="form-group" data-scrapcat="pbl"><label for="sc-subject">Subject Area</label><input class="form-control" type="text" id="sc-subject" placeholder="Science, Robotics"></div><div class="form-group admin-fullwidth"><label for="sc-desc">Description</label><textarea class="form-control" id="sc-desc" placeholder="Short description"></textarea></div><div class="form-group admin-fullwidth"><label for="sc-img">Cover Image</label><input class="form-control" type="file" id="sc-img" accept="image/*"><p id="sc-img-status" class="admin-file-status"></p></div><div class="form-group admin-fullwidth" data-scrapcat="webpages"><label for="sc-html">Upload Webpage File (.html)</label><input class="form-control" type="file" id="sc-html" accept=".html,.htm,text/html"><p id="sc-html-status" class="admin-file-status"></p><p class="admin-hint">The student's HTML page is hosted on the site and opens inside John Dewey with the header and footer.</p></div><button type="submit" class="btn btn-primary admin-form-submit">Add Entry</button></form></div>
+      <div class="admin-panel" id="panel-scrapbook"><div class="admin-list" id="list-scrapbook"></div><form class="admin-form" data-form="scrapbook" id="form-scrapbook"><h4>Manage Student Work</h4><div class="form-group admin-fullwidth"><label for="sc-cat">Category</label><select class="form-control" id="sc-cat"><option value="webpages">Student Webpage</option><option value="field-visits">Field Visit</option><option value="pbl">Project Based Lab</option></select></div><div class="form-group"><label for="sc-title">Title</label><input class="form-control" type="text" id="sc-title" placeholder="Project title"></div><div class="form-group"><label for="sc-by">By</label><input class="form-control" type="text" id="sc-by" placeholder="Grade IX, Computer Project"></div><div class="form-group"><label for="sc-date">Date</label><input class="form-control" type="text" id="sc-date" placeholder="Jun 2026"></div><div class="form-group" data-scrapcat="field-visits"><label for="sc-place">Place Visited</label><input class="form-control" type="text" id="sc-place" placeholder="Dashinkali Temple"></div><div class="form-group" data-scrapcat="pbl"><label for="sc-subject">Subject Area</label><input class="form-control" type="text" id="sc-subject" placeholder="Science, Robotics"></div><div class="form-group admin-fullwidth"><label for="sc-desc">Description</label><textarea class="form-control" id="sc-desc" placeholder="Short description"></textarea></div><div class="form-group admin-fullwidth"><label for="sc-img">Cover Image</label><input class="form-control" type="file" id="sc-img" accept="image/*"><p id="sc-img-status" class="admin-file-status"></p></div><div class="form-group admin-fullwidth" data-scrapcat="webpages"><label for="sc-html">Upload Project Files (HTML, CSS, JS, images, Python, anything)</label><input class="form-control" type="file" id="sc-html" multiple><p id="sc-html-status" class="admin-file-status"></p><p class="admin-hint">Select all the project files together (Ctrl+click to pick several). If there is an HTML page it opens inside John Dewey with linked CSS, JS and images working. Other files are listed for download.</p></div><button type="submit" class="btn btn-primary admin-form-submit">Add Entry</button></form></div>
       <div class="admin-panel" id="panel-gallery"><div class="admin-list" id="list-gallery"></div><form class="admin-form" data-form="gallery" id="form-gallery"><h4>Manage Gallery</h4><div class="form-group admin-fullwidth"><label for="ga-cat">Category</label><select class="form-control" id="ga-cat"><option value="academics">Academics</option><option value="sports">Sports</option><option value="arts">Arts</option><option value="events">Events</option></select></div><div class="form-group"><label for="ga-cap">Caption</label><input class="form-control" type="text" id="ga-cap" placeholder="Classroom learning"></div><div class="form-group admin-fullwidth"><label for="ga-img">Upload Image</label><input class="form-control" type="file" id="ga-img" accept="image/*"><p id="ga-img-status" class="admin-file-status"></p></div><button type="submit" class="btn btn-primary admin-form-submit">Add Entry</button></form></div>
       <div class="admin-panel" id="panel-testimonials"><div class="admin-list" id="list-testimonials"></div><form class="admin-form" data-form="testimonials" id="form-testimonials"><h4>Manage Testimonials</h4><div class="form-group admin-fullwidth"><label for="te-quote">Quote</label><textarea class="form-control" id="te-quote" placeholder="What the parent said"></textarea></div>
             <div class="form-group"><label for="te-name">Name</label><input class="form-control" type="text" id="te-name" placeholder="Parent name"></div>
@@ -288,7 +288,13 @@
       toItem: function(){
         var cat = val('sc-cat');
         var base = { id:uid(), cat:cat, title:val('sc-title'), by:val('sc-by'), date:val('sc-date'), img: uploadedData['sc-img'] || '', desc:val('sc-desc') };
-        if (cat === 'webpages'){ base.label='Student Webpage'; base.html = uploadedData['sc-html'] || ''; base.file = uploadedName['sc-html'] || ''; }
+        if (cat === 'webpages'){
+          base.label='Student Webpage';
+          var up = uploadedData['sc-html'];
+          if (up && typeof up === 'object'){ base.files = up; }
+          else if (up){ base.html = up; }
+          base.file = uploadedName['sc-html'] || '';
+        }
         else if (cat === 'field-visits'){ base.label='Field Visit'; base.place = val('sc-place'); }
         else if (cat === 'pbl'){ base.label='Project Based Lab'; base.subject = val('sc-subject'); }
         return base;
@@ -297,11 +303,11 @@
         setVal('sc-cat', it.cat); applyScrapCat(it.cat);
         setVal('sc-title',it.title); setVal('sc-by',it.by); setVal('sc-date',it.date); setVal('sc-desc',it.desc);
         setVal('sc-place', it.place); setVal('sc-subject', it.subject);
-        uploadedData['sc-img']=it.img||''; uploadedData['sc-html']=it.html||''; uploadedName['sc-html']=it.file||'';
+        uploadedData['sc-img']=it.img||''; uploadedData['sc-html']=it.files||it.html||''; uploadedName['sc-html']=it.file||'';
         var si=document.getElementById('sc-img-status'); if(si) si.textContent = it.img ? 'Current image kept' : '';
-        var sh=document.getElementById('sc-html-status'); if(sh) sh.textContent = it.file ? ('Current file: '+it.file) : '';
+        var sh=document.getElementById('sc-html-status'); if(sh) sh.textContent = it.file ? ('Current files: '+it.file) : '';
       },
-      row: function(it){ var tag = it.html ? ' &middot; HTML' : (it.place ? ' &middot; '+esc(it.place) : (it.subject ? ' &middot; '+esc(it.subject) : '')); return '<strong>'+esc(it.title)+'</strong><span>'+esc(it.label)+' &middot; '+esc(it.by)+tag+'</span><p>'+esc(it.desc)+'</p>'; }
+      row: function(it){ var n = it.files ? Object.keys(it.files).length : 0; var tag = n ? ' &middot; '+n+' file'+(n>1?'s':'') : (it.html ? ' &middot; HTML' : (it.place ? ' &middot; '+esc(it.place) : (it.subject ? ' &middot; '+esc(it.subject) : ''))); return '<strong>'+esc(it.title)+'</strong><span>'+esc(it.label)+' &middot; '+esc(it.by)+tag+'</span><p>'+esc(it.desc)+'</p>'; }
     },
     gallery: {
       key: KEYS.gallery,
@@ -379,8 +385,41 @@
     });
   }
 
+  function isTextFile(name){
+    return /\.(html?|css|js|mjs|json|txt|md|py|java|c|cpp|h|cs|rb|php|xml|svg|csv|yml|yaml|ts|jsx|tsx|sh|bat|sql|ini|cfg|toml)$/i.test(name);
+  }
+
+  function bindProjectUpload(inputId){
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    var status = document.getElementById(inputId + '-status');
+    input.addEventListener('change', function(){
+      var list = Array.prototype.slice.call(input.files || []);
+      if (!list.length) return;
+      var total = 0;
+      for (var i=0;i<list.length;i++) total += list[i].size;
+      if (total > 3000000){ if(status) status.textContent = 'Files too large together (max 3MB total).'; input.value=''; return; }
+      var files = {};
+      var remaining = list.length;
+      list.forEach(function(f){
+        var reader = new FileReader();
+        var text = isTextFile(f.name);
+        reader.onload = function(){
+          files[f.name] = { t: text ? 'text' : 'data', c: String(reader.result || '') };
+          remaining--;
+          if (remaining === 0){
+            uploadedData[inputId] = files;
+            uploadedName[inputId] = list.map(function(x){ return x.name; }).join(', ');
+            if (status) status.textContent = 'Loaded ' + list.length + ' file' + (list.length>1?'s':'') + ': ' + uploadedName[inputId];
+          }
+        };
+        if (text) reader.readAsText(f); else reader.readAsDataURL(f);
+      });
+    });
+  }
+
   bindUpload('sc-img', 'image');
-  bindUpload('sc-html', 'html');
+  bindProjectUpload('sc-html');
   bindUpload('ga-img', 'image');
 
   function applyScrapCat(cat){

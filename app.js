@@ -293,8 +293,8 @@ function hydrateScrapbook() {
   if (!data.length) return;
   grid.innerHTML = data.map(function (s) {
     var cta;
-    if (s.html) {
-      cta = '<a href="project.html?id=' + encodeURIComponent(s.id) + '" class="btn btn-outline btn-sm" style="margin-top:1rem;">View Webpage</a>';
+    if (s.html || (s.files && Object.keys(s.files).length)) {
+      cta = '<a href="project.html?id=' + encodeURIComponent(s.id) + '" class="btn btn-outline btn-sm" style="margin-top:1rem;">View Project</a>';
     } else if (s.link) {
       cta = '<a href="' + jdEsc(s.link) + '" class="btn btn-outline btn-sm" target="_blank" rel="noopener" style="margin-top:1rem;">View Live Demo</a>';
     } else {

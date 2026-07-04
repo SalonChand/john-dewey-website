@@ -89,9 +89,10 @@
         <a href="scrapbook.html" class="btn btn-outline btn-sm">Back to Scrapbook</a>
       </div>
       <div id="projectMissing" class="admin-note" style="display:none;">This project could not be found on this device. Uploaded student webpages are stored in the browser where they were added.</div>
-      <div class="project-frame-wrap fade-in">
+      <div class="project-frame-wrap fade-in" id="projectFrameWrap">
         <iframe id="projectFrame" class="project-frame" sandbox="allow-scripts allow-popups allow-forms" title="Student project"></iframe>
       </div>
+      <div id="projectFiles" class="project-files fade-in" style="display:none;"></div>
     </div>
   </section>
 
@@ -150,26 +151,96 @@
   <button class="back-to-top" id="backToTop" aria-label="Back to top"></button>
   <script>
 (function(){
+  var MIME = { html:'text/html', htm:'text/html', css:'text/css', js:'text/javascript', mjs:'text/javascript', json:'application/json', svg:'image/svg+xml', xml:'application/xml', txt:'text/plain', md:'text/plain', py:'text/plain', csv:'text/csv' };
+  function ext(name){ var m = name.match(/\.([a-z0-9]+)$/i); return m ? m[1].toLowerCase() : ''; }
+  function mimeOf(name){ return MIME[ext(name)] || 'text/plain'; }
+  function escp(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function dataUrlOf(name, content){
+    return 'data:' + mimeOf(name) + ';base64,' + btoa(unescape(encodeURIComponent(content)));
+  }
+  function escReg(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  function buildSrcdoc(files){
+    var names = Object.keys(files);
+    var entry = null;
+    for (var i=0;i<names.length;i++){ if (/^index\.html?$/i.test(names[i])){ entry = names[i]; break; } }
+    if (!entry){ for (var j=0;j<names.length;j++){ if (/\.html?$/i.test(names[j])){ entry = names[j]; break; } } }
+    if (!entry) return null;
+
+    var dataUrls = {};
+    names.forEach(function(n){ if (files[n].t === 'data') dataUrls[n] = files[n].c; });
+
+    var html = files[entry].c;
+
+    names.forEach(function(n){
+      if (n === entry || files[n].t !== 'text') return;
+      var e = ext(n);
+      if (e === 'css'){
+        var css = files[n].c;
+        Object.keys(dataUrls).forEach(function(d){ css = css.split(d).join(dataUrls[d]); });
+        var linkRe = new RegExp('<link[^>]*href=["\']?[^"\'>]*' + escReg(n) + '["\']?[^>]*>', 'gi');
+        html = html.replace(linkRe, function(){ return '<style>' + css + '<' + '/style>'; });
+      } else if (e === 'js' || e === 'mjs'){
+        var js = files[n].c;
+        var scrRe = new RegExp('<script[^>]*src=["\']?[^"\'>]*' + escReg(n) + '["\']?[^>]*>\\s*<\\/script>', 'gi');
+        html = html.replace(scrRe, function(){ return '<script>' + js + '<' + '/script>'; });
+      }
+    });
+
+    names.sort(function(a,b){ return b.length - a.length; }).forEach(function(n){
+      if (n === entry) return;
+      var f = files[n];
+      var url = f.t === 'data' ? f.c : dataUrlOf(n, f.c);
+      html = html.split(n).join(url);
+    });
+    return html;
+  }
+
   function start(){
     var params = new URLSearchParams(window.location.search);
     var id = params.get('id');
     var titleEl = document.getElementById('projectTitle');
     var metaEl = document.getElementById('projectMeta');
     var frame = document.getElementById('projectFrame');
+    var frameWrap = document.getElementById('projectFrameWrap');
     var missing = document.getElementById('projectMissing');
+    var fileList = document.getElementById('projectFiles');
     var data = [];
     try { data = JSON.parse(localStorage.getItem('jd-content-scrapbook')) || []; } catch(e){ data = []; }
     var item = null;
     for (var i=0;i<data.length;i++){ if (data[i].id === id){ item = data[i]; break; } }
-    if (!item || !item.html){
-      if (frame) frame.style.display = 'none';
+
+    if (!item || (!item.html && !item.files)){
+      if (frameWrap) frameWrap.style.display = 'none';
       if (missing) missing.style.display = 'block';
       if (titleEl) titleEl.textContent = 'Project not found';
       return;
     }
+
     if (titleEl) titleEl.textContent = item.title || 'Student Project';
     if (metaEl) metaEl.textContent = (item.by ? item.by : '') + (item.date ? ' \u00b7 ' + item.date : '');
-    if (frame){ frame.setAttribute('srcdoc', item.html); }
+
+    var srcdoc = null;
+    if (item.files){ srcdoc = buildSrcdoc(item.files); }
+    else if (item.html){ srcdoc = item.html; }
+
+    if (srcdoc && frame){
+      frame.setAttribute('srcdoc', srcdoc);
+    } else if (frameWrap){
+      frameWrap.style.display = 'none';
+    }
+
+    if (item.files && fileList){
+      var names = Object.keys(item.files);
+      var rows = names.map(function(n){
+        var f = item.files[n];
+        var href = f.t === 'data' ? f.c : URL.createObjectURL(new Blob([f.c], { type: mimeOf(n) }));
+        return '<a class="project-file" href="' + href + '" download="' + escp(n) + '">' + escp(n) + '<span>download</span></a>';
+      }).join('');
+      fileList.innerHTML = '<h4>Project files</h4><div class="project-file-grid">' + rows + '</div>';
+      fileList.style.display = 'block';
+    }
   }
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', start); } else { start(); }
 })();
