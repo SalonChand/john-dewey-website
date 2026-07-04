@@ -217,8 +217,6 @@
   function showDash(){ login.style.display='none'; dash.style.display='block'; renderAll(); }
   function showLogin(){ login.style.display='block'; dash.style.display='none'; }
 
-  if (isAuthed()) showDash(); else showLogin();
-
   loginForm.addEventListener('submit', function(e){
     e.preventDefault();
     var u = document.getElementById('adminUser').value.trim();
@@ -494,6 +492,8 @@
       reader.readAsText(f);
     });
   }
+
+  if (isAuthed()) showDash(); else showLogin();
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start);
