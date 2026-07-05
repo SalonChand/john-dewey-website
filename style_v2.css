@@ -2502,3 +2502,21 @@ select.form-control {
   overflow-wrap: anywhere;
 }
 #projectOutputBody .out-err { color: #ff9d7a; }
+
+.project-toolbar { display: flex; gap: var(--space-md); margin-bottom: var(--space-lg); }
+.project-toggle-btn {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: none;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+.project-toggle-btn:hover { border-color: var(--rule); }
+.project-output { border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: var(--space-lg); }
+#projectFilesInner .project-code { margin-top: var(--space-lg); }

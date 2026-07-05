@@ -238,11 +238,12 @@
       var tabs = names.map(function(n){
         return '<button class="project-file" data-file="' + escp(n) + '">' + escp(n) + '</button>';
       }).join('');
-      fileList.innerHTML = '<h4>Project files</h4><div class="project-file-grid">' + tabs + '</div>' +
+      fileList.innerHTML = '<div class="project-toolbar" id="projectToolbar" style="display:none;"><button id="projectRunAgain" class="project-run-btn">&#9654; Run Again</button><button id="projectToggleCode" class="project-toggle-btn">View Code</button></div>' +
+        '<div class="project-output" id="projectOutput" style="display:none;"><div class="project-output-head"><span>Output</span><button id="projectOutputClear">clear</button></div><pre id="projectOutputBody"></pre></div>' +
+        '<div id="projectFilesInner"><h4>Project files</h4><div class="project-file-grid">' + tabs + '</div>' +
         '<div class="project-code" id="projectCode" style="display:none;">' +
         '<div class="project-code-head"><span id="projectCodeName"></span><span class="project-code-actions"><button id="projectRunBtn" class="project-run-btn" style="display:none;">&#9654; Run</button><a id="projectCodeDownload" href="#" download>download</a></span></div>' +
-        '<div class="project-code-body" id="projectCodeBody"></div>' +
-        '<div class="project-output" id="projectOutput" style="display:none;"><div class="project-output-head"><span>Output</span><button id="projectOutputClear">clear</button></div><pre id="projectOutputBody"></pre></div></div>';
+        '<div class="project-code-body" id="projectCodeBody"></div></div></div>';
       fileList.style.display = 'block';
 
       var codeWrap = document.getElementById('projectCode');
@@ -309,7 +310,7 @@
         if (d.type === 'status'){ appendOut(d.data + '\n', false); }
         else if (d.type === 'out'){ appendOut(d.data.endsWith('\n') ? d.data : d.data + '\n', false); }
         else if (d.type === 'err'){ appendOut(d.data.endsWith('\n') ? d.data : d.data + '\n', true); }
-        else if (d.type === 'done'){ appendOut('--- finished ---\n', false); runBtn.disabled = false; runBtn.innerHTML = '&#9654; Run'; }
+        else if (d.type === 'done'){ appendOut('--- finished ---\n', false); runBtn.disabled = false; runBtn.innerHTML = '&#9654; Run'; var ra=document.getElementById('projectRunAgain'); if(ra){ ra.disabled=false; ra.innerHTML='&#9654; Run Again'; } }
       });
 
       function jsSafe(code){
@@ -331,7 +332,7 @@
             'var py=await loadPyodide({indexURL:"https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"});' +
             'py.setStdout({batched:function(s){send("out",s);}});' +
             'py.setStderr({batched:function(s){send("err",s);}});' +
-            'py.globals.set("__jd_prompt",function(msg){var r=window.prompt(msg||"Input:");return r===null?"":r;});' +
+            'py.globals.set("__jd_prompt",function(msg){var E=String.fromCharCode(27);msg=String(msg||"").split(E+"[").map(function(s,i){return i===0?s:s.replace(/^[0-9;]*[a-zA-Z]/,"");}).join("").trim();var r=window.prompt(msg||"Input:");return r===null?"":r;});' +
             'await py.runPythonAsync("import builtins\\n_p=__jd_prompt\\ndef input(prompt=\'\'):\\n    v=_p(str(prompt))\\n    print(str(prompt)+v)\\n    return v\\nbuiltins.input=input");' +
             'send("status","Running " + ' + JSON.stringify(name) + ' + "...");' +
             'await py.runPythonAsync(' + jsSafe(code) + ');' +
@@ -354,6 +355,8 @@
         outWrap.style.display = 'block';
         runBtn.disabled = true;
         runBtn.textContent = 'Running...';
+        var ra = document.getElementById('projectRunAgain');
+        if (ra){ ra.disabled = true; ra.textContent = 'Running...'; }
         if (runFrame){ runFrame.remove(); }
         runFrame = document.createElement('iframe');
         runFrame.setAttribute('sandbox', 'allow-scripts allow-modals');
@@ -398,10 +401,29 @@
         if (btn) showFile(btn.getAttribute('data-file'));
       });
 
-      if (!srcdoc && names.length){
-        var first = null;
-        for (var q=0;q<names.length;q++){ if (runnable(names[q])){ first = names[q]; break; } }
-        showFile(first || names[0]);
+      var toolbar = document.getElementById('projectToolbar');
+      var filesInner = document.getElementById('projectFilesInner');
+      var runAgain = document.getElementById('projectRunAgain');
+      var toggleCode = document.getElementById('projectToggleCode');
+
+      var mainRun = null;
+      for (var q=0;q<names.length;q++){ if (/^main\.py$/i.test(names[q])){ mainRun = names[q]; break; } }
+      if (!mainRun){ for (var q2=0;q2<names.length;q2++){ if (ext(names[q2]) === 'py'){ mainRun = names[q2]; break; } } }
+      if (!mainRun){ for (var q3=0;q3<names.length;q3++){ if (runnable(names[q3])){ mainRun = names[q3]; break; } } }
+
+      if (!srcdoc && mainRun){
+        filesInner.style.display = 'none';
+        toolbar.style.display = 'flex';
+        runAgain.addEventListener('click', function(){ runFile(mainRun); });
+        toggleCode.addEventListener('click', function(){
+          var open = filesInner.style.display !== 'none';
+          filesInner.style.display = open ? 'none' : 'block';
+          toggleCode.textContent = open ? 'View Code' : 'Hide Code';
+          if (!open && !codeWrap.style.display.replace('none','')) showFile(mainRun);
+        });
+        runFile(mainRun);
+      } else if (!srcdoc && names.length){
+        showFile(names[0]);
       }
     }
   }
