@@ -233,13 +233,47 @@
 
     if (item.files && fileList){
       var names = Object.keys(item.files);
-      var rows = names.map(function(n){
-        var f = item.files[n];
-        var href = f.t === 'data' ? f.c : URL.createObjectURL(new Blob([f.c], { type: mimeOf(n) }));
-        return '<a class="project-file" href="' + href + '" download="' + escp(n) + '">' + escp(n) + '<span>download</span></a>';
+      var isImg = function(n){ return /\.(png|jpe?g|gif|webp|bmp|ico|svg)$/i.test(n); };
+      var tabs = names.map(function(n){
+        return '<button class="project-file" data-file="' + escp(n) + '">' + escp(n) + '</button>';
       }).join('');
-      fileList.innerHTML = '<h4>Project files</h4><div class="project-file-grid">' + rows + '</div>';
+      fileList.innerHTML = '<h4>Project files</h4><div class="project-file-grid">' + tabs + '</div>' +
+        '<div class="project-code" id="projectCode" style="display:none;">' +
+        '<div class="project-code-head"><span id="projectCodeName"></span><a id="projectCodeDownload" href="#" download>download</a></div>' +
+        '<div class="project-code-body" id="projectCodeBody"></div></div>';
       fileList.style.display = 'block';
+
+      var codeWrap = document.getElementById('projectCode');
+      var codeName = document.getElementById('projectCodeName');
+      var codeBody = document.getElementById('projectCodeBody');
+      var codeDl = document.getElementById('projectCodeDownload');
+
+      function showFile(n){
+        var f = item.files[n];
+        codeName.textContent = n;
+        codeDl.setAttribute('download', n);
+        codeDl.setAttribute('href', f.t === 'data' ? f.c : URL.createObjectURL(new Blob([f.c], { type: mimeOf(n) })));
+        if (f.t === 'data' && isImg(n)){
+          codeBody.innerHTML = '<img src="' + f.c + '" alt="' + escp(n) + '">';
+        } else if (f.t === 'data'){
+          codeBody.innerHTML = '<p class="project-code-note">Preview not available for this file type. Use the download link above.</p>';
+        } else {
+          var pre = document.createElement('pre');
+          pre.textContent = f.c;
+          codeBody.innerHTML = '';
+          codeBody.appendChild(pre);
+        }
+        codeWrap.style.display = 'block';
+        var btns = fileList.querySelectorAll('.project-file');
+        for (var k=0;k<btns.length;k++){ btns[k].classList.toggle('active', btns[k].getAttribute('data-file') === n); }
+      }
+
+      fileList.addEventListener('click', function(e){
+        var btn = e.target.closest('.project-file');
+        if (btn) showFile(btn.getAttribute('data-file'));
+      });
+
+      if (!srcdoc && names.length){ showFile(names[0]); }
     }
   }
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', start); } else { start(); }
