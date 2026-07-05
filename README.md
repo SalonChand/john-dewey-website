@@ -15,8 +15,9 @@ Login: johndewey06@gmail.com / johndewey2026@
 ## Student projects
 Upload all project files together in the Scrapbook tab.
 - HTML projects open inside the site with linked CSS, JS and images working.
-- Python and JavaScript files have a Run button and execute right on the page
-  (Python runs via Pyodide, loaded on first run; input() opens a prompt).
+- Python and JavaScript files run right on the page (Run button). Python uses
+  Pyodide (loads on first run); input() opens a prompt; terminal colours
+  (ANSI codes) are rendered in the output console.
 - Every file can be viewed on the page or downloaded.
 
 ## Photos

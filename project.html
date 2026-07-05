@@ -257,11 +257,49 @@
       var runFrame = null;
       var runToken = 0;
 
-      function appendOut(text, isErr){
+      var ANSI_FG = {30:'#8a8a8a',31:'#ff8a7a',32:'#8fe3a1',33:'#ffd97a',34:'#8ab4ff',35:'#e5a0ff',36:'#7fe0e0',37:'#e9e2d6',90:'#9a9a9a',91:'#ffa08f',92:'#a5f0b5',93:'#ffe49a',94:'#a5c6ff',95:'#efb8ff',96:'#9df0f0',97:'#ffffff'};
+      var ANSI_BG = {40:'#000000',41:'#7a2a1e',42:'#1e5c30',43:'#6b5518',44:'#1e3a6b',45:'#5c1e6b',46:'#186b6b',47:'#c9c2b6',100:'#3a3a3a',101:'#a04434',102:'#2e7a44',103:'#8a7028',104:'#2e4f8a',105:'#7a2e8a',106:'#288a8a',107:'#e9e2d6'};
+      var ansiState = { fg:null, bg:null, bold:false, dim:false, underline:false };
+
+      function ansiApply(codes){
+        if (!codes.length) codes = [0];
+        for (var i=0;i<codes.length;i++){
+          var c = codes[i];
+          if (c === 0){ ansiState.fg=null; ansiState.bg=null; ansiState.bold=false; ansiState.dim=false; ansiState.underline=false; }
+          else if (c === 1) ansiState.bold = true;
+          else if (c === 2) ansiState.dim = true;
+          else if (c === 4) ansiState.underline = true;
+          else if (c === 22){ ansiState.bold=false; ansiState.dim=false; }
+          else if (c === 24) ansiState.underline = false;
+          else if (c === 39) ansiState.fg = null;
+          else if (c === 49) ansiState.bg = null;
+          else if (ANSI_FG[c]) ansiState.fg = ANSI_FG[c];
+          else if (ANSI_BG[c]) ansiState.bg = ANSI_BG[c];
+        }
+      }
+
+      function styledSpan(text, isErr){
         var span = document.createElement('span');
-        if (isErr) span.className = 'out-err';
         span.textContent = text;
-        outBody.appendChild(span);
+        if (ansiState.fg) span.style.color = ansiState.fg;
+        else if (isErr) span.className = 'out-err';
+        if (ansiState.bg) span.style.backgroundColor = ansiState.bg;
+        if (ansiState.bold) span.style.fontWeight = '700';
+        if (ansiState.dim) span.style.opacity = '0.65';
+        if (ansiState.underline) span.style.textDecoration = 'underline';
+        return span;
+      }
+
+      function appendOut(text, isErr){
+        text = text.replace(/\x1b\[[0-9;]*[A-HJKSTfsu]/g, '');
+        var re = /\x1b\[([0-9;]*)m/g;
+        var last = 0, m;
+        while ((m = re.exec(text)) !== null){
+          if (m.index > last) outBody.appendChild(styledSpan(text.slice(last, m.index), isErr));
+          ansiApply(m[1] === '' ? [0] : m[1].split(';').map(Number));
+          last = re.lastIndex;
+        }
+        if (last < text.length) outBody.appendChild(styledSpan(text.slice(last), isErr));
         outBody.scrollTop = outBody.scrollHeight;
       }
 
