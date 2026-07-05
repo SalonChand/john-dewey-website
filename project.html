@@ -234,25 +234,106 @@
     if (item.files && fileList){
       var names = Object.keys(item.files);
       var isImg = function(n){ return /\.(png|jpe?g|gif|webp|bmp|ico|svg)$/i.test(n); };
+      var runnable = function(n){ var e = ext(n); return e === 'py' || e === 'js' || e === 'mjs'; };
       var tabs = names.map(function(n){
         return '<button class="project-file" data-file="' + escp(n) + '">' + escp(n) + '</button>';
       }).join('');
       fileList.innerHTML = '<h4>Project files</h4><div class="project-file-grid">' + tabs + '</div>' +
         '<div class="project-code" id="projectCode" style="display:none;">' +
-        '<div class="project-code-head"><span id="projectCodeName"></span><a id="projectCodeDownload" href="#" download>download</a></div>' +
-        '<div class="project-code-body" id="projectCodeBody"></div></div>';
+        '<div class="project-code-head"><span id="projectCodeName"></span><span class="project-code-actions"><button id="projectRunBtn" class="project-run-btn" style="display:none;">&#9654; Run</button><a id="projectCodeDownload" href="#" download>download</a></span></div>' +
+        '<div class="project-code-body" id="projectCodeBody"></div>' +
+        '<div class="project-output" id="projectOutput" style="display:none;"><div class="project-output-head"><span>Output</span><button id="projectOutputClear">clear</button></div><pre id="projectOutputBody"></pre></div></div>';
       fileList.style.display = 'block';
 
       var codeWrap = document.getElementById('projectCode');
       var codeName = document.getElementById('projectCodeName');
       var codeBody = document.getElementById('projectCodeBody');
       var codeDl = document.getElementById('projectCodeDownload');
+      var runBtn = document.getElementById('projectRunBtn');
+      var outWrap = document.getElementById('projectOutput');
+      var outBody = document.getElementById('projectOutputBody');
+      var outClear = document.getElementById('projectOutputClear');
+      var currentFile = null;
+      var runFrame = null;
+      var runToken = 0;
+
+      function appendOut(text, isErr){
+        var span = document.createElement('span');
+        if (isErr) span.className = 'out-err';
+        span.textContent = text;
+        outBody.appendChild(span);
+        outBody.scrollTop = outBody.scrollHeight;
+      }
+
+      window.addEventListener('message', function(e){
+        var d = e.data;
+        if (!d || !d.jdRun || d.token !== runToken) return;
+        if (d.type === 'status'){ appendOut(d.data + '\n', false); }
+        else if (d.type === 'out'){ appendOut(d.data.endsWith('\n') ? d.data : d.data + '\n', false); }
+        else if (d.type === 'err'){ appendOut(d.data.endsWith('\n') ? d.data : d.data + '\n', true); }
+        else if (d.type === 'done'){ appendOut('--- finished ---\n', false); runBtn.disabled = false; runBtn.innerHTML = '&#9654; Run'; }
+      });
+
+      function jsSafe(code){
+        return JSON.stringify(code).replace(/<\//g, '<\\/');
+      }
+
+      function runnerDoc(name, code){
+        var e = ext(name);
+        var open = '<scr' + 'ipt>';
+        var close = '</scr' + 'ipt>';
+        var send = 'function send(t,d){parent.postMessage({jdRun:true,token:' + runToken + ',type:t,data:String(d)},"*");}';
+        if (e === 'py'){
+          return '<scr' + 'ipt src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js">' + close +
+            open + send +
+            'window.onerror=function(m){send("err",m);send("done","");};' +
+            '(async function(){' +
+            'try{' +
+            'send("status","Loading Python runtime (first run can take a moment)...");' +
+            'var py=await loadPyodide({indexURL:"https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"});' +
+            'py.setStdout({batched:function(s){send("out",s);}});' +
+            'py.setStderr({batched:function(s){send("err",s);}});' +
+            'py.globals.set("__jd_prompt",function(msg){var r=window.prompt(msg||"Input:");return r===null?"":r;});' +
+            'await py.runPythonAsync("import builtins\\n_p=__jd_prompt\\ndef input(prompt=\'\'):\\n    v=_p(str(prompt))\\n    print(str(prompt)+v)\\n    return v\\nbuiltins.input=input");' +
+            'send("status","Running " + ' + JSON.stringify(name) + ' + "...");' +
+            'await py.runPythonAsync(' + jsSafe(code) + ');' +
+            'send("done","");' +
+            '}catch(err){send("err",String(err));send("done","");}' +
+            '})();' + close;
+        }
+        return open + send +
+          '["log","error","warn","info"].forEach(function(k){var o=console[k];console[k]=function(){send(k==="error"?"err":"out",Array.prototype.map.call(arguments,function(a){try{return typeof a==="object"?JSON.stringify(a):String(a)}catch(e){return String(a)}}).join(" "));o&&o.apply(console,arguments);};});' +
+          'window.onerror=function(m){send("err",String(m));};' +
+          'try{(new Function(' + jsSafe(code) + '))();}catch(err){send("err",String(err));}' +
+          'send("done","");' + close;
+      }
+
+      function runFile(n){
+        var f = item.files[n];
+        if (!f || f.t !== 'text') return;
+        runToken++;
+        outBody.textContent = '';
+        outWrap.style.display = 'block';
+        runBtn.disabled = true;
+        runBtn.textContent = 'Running...';
+        if (runFrame){ runFrame.remove(); }
+        runFrame = document.createElement('iframe');
+        runFrame.setAttribute('sandbox', 'allow-scripts allow-modals');
+        runFrame.style.display = 'none';
+        runFrame.setAttribute('srcdoc', runnerDoc(n, f.c));
+        document.body.appendChild(runFrame);
+      }
+
+      runBtn.addEventListener('click', function(){ if (currentFile) runFile(currentFile); });
+      outClear.addEventListener('click', function(){ outBody.textContent = ''; });
 
       function showFile(n){
         var f = item.files[n];
+        currentFile = n;
         codeName.textContent = n;
         codeDl.setAttribute('download', n);
         codeDl.setAttribute('href', f.t === 'data' ? f.c : URL.createObjectURL(new Blob([f.c], { type: mimeOf(n) })));
+        runBtn.style.display = (f.t === 'text' && runnable(n)) ? 'inline-block' : 'none';
         if (f.t === 'data' && isImg(n)){
           codeBody.innerHTML = '<img src="' + f.c + '" alt="' + escp(n) + '">';
         } else if (f.t === 'data'){
@@ -262,6 +343,12 @@
           pre.textContent = f.c;
           codeBody.innerHTML = '';
           codeBody.appendChild(pre);
+          if (ext(n) === 'bat' || ext(n) === 'sh'){
+            var note = document.createElement('p');
+            note.className = 'project-code-note';
+            note.textContent = 'This is a system script and cannot run in the browser. Python and JavaScript files have a Run button.';
+            codeBody.appendChild(note);
+          }
         }
         codeWrap.style.display = 'block';
         var btns = fileList.querySelectorAll('.project-file');
@@ -273,7 +360,11 @@
         if (btn) showFile(btn.getAttribute('data-file'));
       });
 
-      if (!srcdoc && names.length){ showFile(names[0]); }
+      if (!srcdoc && names.length){
+        var first = null;
+        for (var q=0;q<names.length;q++){ if (runnable(names[q])){ first = names[q]; break; } }
+        showFile(first || names[0]);
+      }
     }
   }
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', start); } else { start(); }
