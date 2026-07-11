@@ -64,6 +64,9 @@
         <a href="events.html" class="nav-link">Events</a>
         <a href="gallery.html" class="nav-link">Gallery</a>
         <a href="contact.html" class="nav-link">Contact</a>
+        <a href="scrapbook.html" class="nav-link nav-mobile-only">Scrapbook</a>
+        <a href="calendar.html" class="nav-link nav-mobile-only">Calendar</a>
+        <a href="parents-voice.html" class="nav-link nav-mobile-only">Parents Voice</a>
         <div class="nav-cta"><a href="apply.html" class="btn btn-primary btn-sm">Apply Online</a></div>
       </nav>
       <button class="nav-toggle" id="navToggle" aria-label="Open menu"><span></span><span></span><span></span></button>
@@ -210,6 +213,10 @@
     try { data = JSON.parse(localStorage.getItem('jd-content-scrapbook')) || []; } catch(e){ data = []; }
     var item = null;
     for (var i=0;i<data.length;i++){ if (data[i].id === id){ item = data[i]; break; } }
+    if ((!item || (!item.html && !item.files)) && window.JD_PUBLISHED && Array.isArray(window.JD_PUBLISHED.scrapbook)){
+      var pub = window.JD_PUBLISHED.scrapbook;
+      for (var i2=0;i2<pub.length;i2++){ if (pub[i2].id === id){ item = pub[i2]; break; } }
+    }
 
     if (!item || (!item.html && !item.files)){
       if (frameWrap) frameWrap.style.display = 'none';
@@ -427,7 +434,14 @@
       }
     }
   }
-  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', start); } else { start(); }
+  function begin(){
+    fetch('content.json', { cache: 'no-store' })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){ if (d) window.JD_PUBLISHED = d; })
+      .catch(function(){})
+      .then(start);
+  }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', begin); } else { begin(); }
 })();
 </script>
   <script src="./app.js"></script>

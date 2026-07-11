@@ -2520,3 +2520,8 @@ select.form-control {
 .project-toggle-btn:hover { border-color: var(--rule); }
 .project-output { border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: var(--space-lg); }
 #projectFilesInner .project-code { margin-top: var(--space-lg); }
+
+.nav-mobile-only { display: none; }
+@media (max-width: 992px) {
+  .nav-mobile-only { display: block; }
+}

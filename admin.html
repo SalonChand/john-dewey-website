@@ -64,6 +64,9 @@
         <a href="events.html" class="nav-link">Events</a>
         <a href="gallery.html" class="nav-link">Gallery</a>
         <a href="contact.html" class="nav-link">Contact</a>
+        <a href="scrapbook.html" class="nav-link nav-mobile-only">Scrapbook</a>
+        <a href="calendar.html" class="nav-link nav-mobile-only">Calendar</a>
+        <a href="parents-voice.html" class="nav-link nav-mobile-only">Parents Voice</a>
         <div class="nav-cta"><a href="apply.html" class="btn btn-primary btn-sm">Apply Online</a></div>
       </nav>
       <button class="nav-toggle" id="navToggle" aria-label="Open menu"><span></span><span></span><span></span></button>
@@ -104,7 +107,7 @@
             <button class="admin-icon-btn danger" id="adminLogout">Log Out</button>
           </div>
         </div>
-        <div class="admin-note">Changes are saved in this browser and update the public pages on this device. To publish for all visitors, export the values and commit them to the site source.</div>
+        <div class="admin-note">Changes are saved in this browser and show on this device right away. To publish for ALL visitors and devices: press Export (downloads content.json), put that file in the website folder, then run deploy.ps1.</div>
         <div class="admin-tabs">
         <button class="admin-tab active" data-tab="applications">Applications</button>
         <button class="admin-tab" data-tab="events">Events</button>
@@ -499,7 +502,7 @@
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
       a.href = url;
-      a.download = 'johndewey-content.json';
+      a.download = 'content.json';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

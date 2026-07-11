@@ -269,8 +269,18 @@ document.addEventListener('click', (e) => {
   }
 });
 
+var JD_PUBLISHED = null;
+
 function jdRead(key) {
-  try { return JSON.parse(localStorage.getItem(key)) || []; } catch (e) { return []; }
+  var local = [];
+  try { local = JSON.parse(localStorage.getItem(key)) || []; } catch (e) { local = []; }
+  if (Array.isArray(local) && local.length) return local;
+  if (JD_PUBLISHED) {
+    var section = key.replace('jd-content-', '');
+    var pub = JD_PUBLISHED[section];
+    if (Array.isArray(pub) && pub.length) return pub;
+  }
+  return [];
 }
 
 function jdEsc(s) {
@@ -284,6 +294,22 @@ function hydrateContent() {
   hydrateGallery();
   hydrateTestimonials();
   hydrateNotices();
+  hydrateEvents();
+}
+
+function hydrateEvents() {
+  if (!/events\.html$/.test(window.location.pathname)) return;
+  var grid = document.querySelector('.programs-grid');
+  if (!grid) return;
+  var data = jdRead('jd-content-events');
+  if (!data.length) return;
+  grid.innerHTML = data.map(function (e) {
+    return '<article class="program-card fade-in visible"><div class="event-card-content" style="padding:1.75rem;">' +
+      '<span class="badge">' + jdEsc(e.month) + ' ' + jdEsc(e.day) + '</span>' +
+      '<div class="event-card-date" style="margin-top:0.75rem;">' + jdEsc(e.date) + '</div>' +
+      '<h3 style="font-size:1.25rem;margin:0.5rem 0;">' + jdEsc(e.title) + '</h3>' +
+      '<p>' + jdEsc(e.text) + '</p></div></article>';
+  }).join('');
 }
 
 function hydrateScrapbook() {
@@ -344,4 +370,14 @@ function hydrateNotices() {
   }).join('');
 }
 
-hydrateContent();
+fetch('content.json', { cache: 'no-store' })
+  .then(function (r) { return r.ok ? r.json() : null; })
+  .then(function (d) { JD_PUBLISHED = d; })
+  .catch(function () {})
+  .then(function () {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', hydrateContent);
+    } else {
+      hydrateContent();
+    }
+  });
