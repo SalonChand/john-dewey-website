@@ -326,8 +326,11 @@ function hydrateScrapbook() {
     } else {
       cta = '<a href="events.html" class="read-more">See more</a>';
     }
+    var imgHtml = s.img
+      ? '<img src="' + jdEsc(s.img) + '" alt="' + jdEsc(s.title) + '" loading="lazy">'
+      : '<div class="scrapbook-card-placeholder"><span>' + jdEsc((s.title || 'JD').charAt(0)) + '</span></div>';
     return '<article class="scrapbook-card fade-in visible" data-category="' + jdEsc(s.cat) + '">' +
-      '<div class="scrapbook-card-image"><img src="' + jdEsc(s.img) + '" alt="' + jdEsc(s.title) + '" loading="lazy"><div class="scrapbook-card-date">' + jdEsc(s.label) + '</div></div>' +
+      '<div class="scrapbook-card-image">' + imgHtml + '<div class="scrapbook-card-date">' + jdEsc(s.label) + '</div></div>' +
       '<div class="scrapbook-card-body"><div class="scrapbook-meta">' + jdEsc(s.by) + ' &middot; ' + jdEsc(s.date) + '</div>' +
       '<h3>' + jdEsc(s.title) + '</h3><p>' + jdEsc(s.desc) + '</p>' + cta + '</div></article>';
   }).join('');

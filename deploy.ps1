@@ -14,6 +14,18 @@ if ($missing) {
 }
 Write-Host "All required files present." -ForegroundColor Green
 
+$dl = Join-Path $env:USERPROFILE "Downloads\content.json"
+if (Test-Path $dl) {
+    $useIt = $true
+    if (Test-Path "content.json") {
+        $useIt = (Get-Item $dl).LastWriteTime -gt (Get-Item "content.json").LastWriteTime
+    }
+    if ($useIt) {
+        Copy-Item $dl "content.json" -Force
+        Write-Host "Found newer content.json in Downloads - publishing it." -ForegroundColor Green
+    }
+}
+
 $gitok = Get-Command git -ErrorAction SilentlyContinue
 if (-not $gitok) {
     Write-Host "Git is not installed or not in PATH. Install from https://git-scm.com then rerun." -ForegroundColor Red
